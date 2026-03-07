@@ -1,0 +1,43 @@
+/* 风险等级标签样式 */
+.risk-high {
+    background-color: #dc3545;
+    color: white;
+    padding: 0.3rem 0.8rem;
+    border-radius: 20px;
+    font-weight: bold;
+    display: inline-block;
+}
+.risk-mid {
+    background-color: #ffc107;
+    color: black;
+    padding: 0.3rem 0.8rem;
+    border-radius: 20px;
+    font-weight: bold;
+    display: inline-block;
+}
+.risk-low {
+    background-color: #28a745;
+    color: white;
+    padding: 0.3rem 0.8rem;
+    border-radius: 20px;
+    font-weight: bold;
+    display: inline-block;
+}
+
+/* 列表项中的风险色块小标识 */
+.risk-badge {
+    width: 12px;
+    height: 12px;
+    border-radius: 50%;
+    display: inline-block;
+    margin-right: 6px;
+}
+
+/* 患者列表项样式 */
+.patient-item {
+    cursor: pointer;
+    transition: background-color 0.2s;
+}
+.patient-item:hover {
+    background-color: #f8f9fa;
+}
