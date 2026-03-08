@@ -1,4 +1,4 @@
-/* 风险等级标签样式 */
+/* ========== 原有样式（风险标签、列表项等）========== */
 .risk-high {
     background-color: #dc3545;
     color: white;
@@ -23,8 +23,6 @@
     font-weight: bold;
     display: inline-block;
 }
-
-/* 列表项中的风险色块小标识 */
 .risk-badge {
     width: 12px;
     height: 12px;
@@ -32,12 +30,53 @@
     display: inline-block;
     margin-right: 6px;
 }
-
-/* 患者列表项样式 */
 .patient-item {
     cursor: pointer;
     transition: background-color 0.2s;
 }
 .patient-item:hover {
     background-color: #f8f9fa;
+}
+
+/* ========== 登录页样式 ========== */
+.login-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;
+    background: linear-gradient(135deg, #1A6DFF 0%, #0d4bb3 100%);
+}
+.login-box {
+    background: white;
+    padding: 2.5rem;
+    border-radius: 16px;
+    box-shadow: 0 20px 40px rgba(0,0,0,0.2);
+    width: 100%;
+    max-width: 400px;
+    margin: 20px;
+}
+.login-box h3 {
+    color: #333;
+    font-weight: 600;
+}
+.login-box .form-control {
+    border-radius: 8px;
+    padding: 12px 16px;
+    border: 1px solid #e0e0e0;
+    font-size: 1rem;
+}
+.login-box .form-control:focus {
+    border-color: #1A6DFF;
+    box-shadow: 0 0 0 0.2rem rgba(26,109,255,0.25);
+}
+.login-box .btn-primary {
+    background-color: #1A6DFF;
+    border: none;
+    padding: 12px;
+    border-radius: 8px;
+    font-weight: 600;
+    font-size: 1rem;
+}
+.login-box .btn-primary:hover {
+    background-color: #0d5bdd;
 }
