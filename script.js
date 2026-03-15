@@ -16,7 +16,53 @@ const patients = [
             recheck: ['每周复查宫颈长度', '3天后复查空腹血糖'],
             lifestyle: ['卧床休息', '控制碳水化合物摄入', '每日监测胎动'],
             warning: ['规律宫缩立即就医', '阴道流血立即就医']
+        },
+        // 张敏有污染物数据
+        pollutants: {
+            bloodMetals: {
+                Cd: { value: 0.96, ref: '<2.0', lod: 0.05 },
+                Cr: { value: 2.3, ref: '<5.0', lod: 0.1 },
+                Ni: { value: 1.8, ref: '<4.0', lod: 0.1 },
+                Co: { value: 0.9, ref: '<1.5', lod: 0.05 },
+                Pb: { value: 12.5, ref: '<50', lod: 0.5 },
+                As: { value: 8.2, ref: '<15', lod: 0.5 },
+                Hg: { value: 1.1, ref: '<5.0', lod: 0.2 },
+                Se: { value: 80, ref: '70-150', lod: 5 },
+                Zn: { value: 1200, ref: '700-1500', lod: 20 },
+                Mn: { value: 15.0, ref: '8-20', lod: 0.5 },
+                Fe: { value: 450, ref: '400-600', lod: 10 },
+                Cu: { value: 1300, ref: '800-1500', lod: 10 },
+                Mo: { value: 5.2, ref: '1-8', lod: 0.2 }
+            },
+            bisphenols: {
+                BPA: { value: 5262, ref: '<5000', lod: 1 },
+                BPB: { value: 2.1, ref: '<10', lod: 0.5 },
+                BPF: { value: 3.5, ref: '<10', lod: 0.5 },
+                BPE: { value: 1.2, ref: '<5', lod: 0.2 },
+                BPS: { value: 2.1, ref: '<10', lod: 0.5 },
+                BPP: { value: 0.8, ref: '<5', lod: 0.2 }
+            },
+        pfas: {
+            PFOA: { value: 2.8, ref: '<5', lod: 0.1 },
+            PFDOA: { value: 3.32, ref: '<10', lod: 0.2 },
+            PFBA: { value: 0.9, ref: '<5', lod: 0.1 },
+            PFHPA: { value: 1.5, ref: '<5', lod: 0.1 },
+            PFHXA: { value: 0.7, ref: '<3', lod: 0.1 },
+            'L-PFBS': { value: 1.1, ref: '<5', lod: 0.1 },
+            PFOSK: { value: 1.6, ref: '<5', lod: 0.1 },
+            '6-2FTS': { value: 0.5, ref: '<2', lod: 0.1 }
         }
+    },
+        // 新增血清学指标
+            serumMarkers: {
+                hCG: { value: 25000, ref: '20000-50000', unit: 'mIU/mL' },
+                PAPP_A: { value: 2.5, ref: '1.0-3.0', unit: 'mIU/mL' },
+                AFP: { value: 35, ref: '20-50', unit: 'ng/mL' },
+                uE3: { value: 1.2, ref: '0.5-2.0', unit: 'ng/mL' },
+                InhibinA: { value: 150, ref: '100-300', unit: 'pg/mL' },
+                PlGF: { value: 120, ref: '80-200', unit: 'pg/mL' },
+                sFlt1: { value: 2500, ref: '1500-4000', unit: 'pg/mL' }
+      }
     },
     {
         id: 2,
@@ -35,6 +81,7 @@ const patients = [
             lifestyle: ['饮食控制', '每日散步30分钟'],
             warning: ['多饮多尿及时咨询']
         }
+        // 没有 pollutants，详情页会显示无数据
     },
     {
         id: 3,
@@ -74,10 +121,13 @@ const patients = [
 
 // ========== 渲染函数 ==========
 function updateStats() {
-    let high = patients.filter(p => p.riskLevel === 'high').length;
-    let mid = patients.filter(p => p.riskLevel === 'mid').length;
-    let low = patients.filter(p => p.riskLevel === 'low').length;
-    document.getElementById('totalCount').innerText = patients.length;
+    // 设置你想要的演示数字
+    const total = 5842;    // 总管理人数
+    const high = 367;      // 高风险
+    const mid = 892;       // 中风险
+    const low = 4583;      // 低风险
+
+    document.getElementById('totalCount').innerText = total;
     document.getElementById('highCount').innerText = high;
     document.getElementById('midCount').innerText = mid;
     document.getElementById('lowCount').innerText = low;
@@ -123,25 +173,24 @@ function showDetailPage(patientId) {
     const patient = patients.find(p => p.id === patientId);
     if (!patient) return;
 
+    // 基本信息
     document.getElementById('detailName').innerText = `${patient.name} · ${patient.age}岁 · 孕${patient.weeks}周`;
     document.getElementById('detailAge').innerText = patient.age;
     document.getElementById('detailWeeks').innerText = patient.weeks;
     document.getElementById('detailScore').innerText = patient.riskScore;
 
-    let riskTag = '';
-    let riskClass = '';
+    // 风险等级标签
+    let riskTag = '', riskClass = '';
     if (patient.riskLevel === 'high') {
-        riskTag = '高风险';
-        riskClass = 'risk-high';
+        riskTag = '高风险'; riskClass = 'risk-high';
     } else if (patient.riskLevel === 'mid') {
-        riskTag = '中风险';
-        riskClass = 'risk-mid';
+        riskTag = '中风险'; riskClass = 'risk-mid';
     } else {
-        riskTag = '低风险';
-        riskClass = 'risk-low';
+        riskTag = '低风险'; riskClass = 'risk-low';
     }
     document.getElementById('detailRiskTag').innerHTML = `<span class="${riskClass}">${riskTag}</span>`;
     
+    // 风险进度条
     const progressBar = document.getElementById('detailProgress');
     progressBar.style.width = patient.riskScore + '%';
     progressBar.className = 'progress-bar';
@@ -149,6 +198,7 @@ function showDetailPage(patientId) {
     else if (patient.riskLevel === 'mid') progressBar.classList.add('bg-warning');
     else progressBar.classList.add('bg-success');
 
+    // 主要风险因素
     const factorList = document.getElementById('detailFactors');
     factorList.innerHTML = '';
     patient.factors.forEach(f => {
@@ -158,27 +208,73 @@ function showDetailPage(patientId) {
         factorList.appendChild(li);
     });
 
+    // 干预建议
     document.getElementById('adviceRecheck').innerHTML = patient.advice.recheck.map(item => `<li>${item}</li>`).join('');
     document.getElementById('adviceLifestyle').innerHTML = patient.advice.lifestyle.map(item => `<li>${item}</li>`).join('');
     document.getElementById('adviceWarning').innerHTML = patient.advice.warning.map(item => `<li class="text-danger">${item}</li>`).join('');
 
+    // ========== 污染物数据（带参考范围和检出限） ==========
+    if (patient.pollutants) {
+        // 全血金属
+        const bloodMetals = patient.pollutants.bloodMetals;
+        let bloodHtml = '';
+        for (let [el, data] of Object.entries(bloodMetals)) {
+            bloodHtml += `<tr><td>${el}</td><td>${data.value}</td><td>${data.ref}</td><td>${data.lod}</td></tr>`;
+        }
+        document.getElementById('bloodMetalsList').innerHTML = bloodHtml;
+
+        // 双酚类
+        const bisphenols = patient.pollutants.bisphenols;
+        let bpaHtml = '';
+        for (let [comp, data] of Object.entries(bisphenols)) {
+            bpaHtml += `<tr><td>${comp}</td><td>${data.value}</td><td>${data.ref}</td><td>${data.lod}</td></tr>`;
+        }
+        document.getElementById('bisphenolsList').innerHTML = bpaHtml;
+
+        // 全氟化合物
+        const pfas = patient.pollutants.pfas;
+        let pfasHtml = '';
+        for (let [comp, data] of Object.entries(pfas)) {
+            pfasHtml += `<tr><td>${comp}</td><td>${data.value}</td><td>${data.ref}</td><td>${data.lod}</td></tr>`;
+        }
+        document.getElementById('pfasList').innerHTML = pfasHtml;
+    } else {
+        document.getElementById('bloodMetalsList').innerHTML = '<tr><td colspan="4" class="text-center">无数据</td></tr>';
+        document.getElementById('bisphenolsList').innerHTML = '<tr><td colspan="4" class="text-center">无数据</td></tr>';
+        document.getElementById('pfasList').innerHTML = '<tr><td colspan="4" class="text-center">无数据</td></tr>';
+    }
+
+    // ========== 血清学及蛋白质指标 ==========
+    if (patient.serumMarkers) {
+        const markers = patient.serumMarkers;
+        let markersHtml = '';
+        for (let [name, data] of Object.entries(markers)) {
+            // 将键名转换为友好的显示名称
+            let displayName = name;
+            if (name === 'hCG') displayName = '人绒毛膜促性腺激素 (hCG)';
+            else if (name === 'PAPP_A') displayName = '妊娠相关血浆蛋白A (PAPP-A)';
+            else if (name === 'AFP') displayName = '甲胎蛋白 (AFP)';
+            else if (name === 'uE3') displayName = '游离雌三醇 (uE3)';
+            else if (name === 'InhibinA') displayName = '抑制素A';
+            else if (name === 'PlGF') displayName = '胎盘生长因子 (PlGF)';
+            else if (name === 'sFlt1') displayName = '可溶性Fms样酪氨酸激酶1 (sFlt-1)';
+            markersHtml += `<tr><td>${displayName}</td><td>${data.value}</td><td>${data.ref}</td><td>${data.unit}</td></tr>`;
+        }
+        document.getElementById('serumMarkersList').innerHTML = markersHtml;
+    } else {
+        document.getElementById('serumMarkersList').innerHTML = '<tr><td colspan="4" class="text-center">无数据</td></tr>';
+    }
+
+    // 切换页面显示
     document.getElementById('listPage').style.display = 'none';
     document.getElementById('detailPage').style.display = 'block';
 }
-
-function backToList() {
-    document.getElementById('listPage').style.display = 'block';
-    document.getElementById('detailPage').style.display = 'none';
-}
-
 // ========== 登录交互 ==========
 document.addEventListener('DOMContentLoaded', function() {
-    // 初始化患者列表
     updateStats();
     renderPatientList();
     document.getElementById('backToList').addEventListener('click', backToList);
 
-    // 登录相关
     const loginPage = document.getElementById('loginPage');
     const mainApp = document.getElementById('mainApp');
     const loginBtn = document.getElementById('loginBtn');
@@ -186,7 +282,10 @@ document.addEventListener('DOMContentLoaded', function() {
     const passwordInput = document.getElementById('password');
 
     const validAccounts = [
-        { id: '2023542080', pwd: '123456' }
+        { id: '2023542080', pwd: '123456' },
+        { id: '2023542025', pwd: '123456' },
+        { id: '2023542071', pwd: '123456' },
+        { id: '2023542101', pwd: '123456' }
     ];
 
     function validateLogin(doctorId, password) {
@@ -206,13 +305,11 @@ document.addEventListener('DOMContentLoaded', function() {
             loginPage.style.display = 'none';
             mainApp.style.display = 'block';
         } else {
-            alert('工号或密码错误，请重试（演示账号：1001/1002，密码123456）');
+            alert('工号或密码错误');
         }
     });
 
     passwordInput.addEventListener('keypress', function(e) {
-        if (e.key === 'Enter') {
-            loginBtn.click();
-        }
+        if (e.key === 'Enter') loginBtn.click();
     });
 });
